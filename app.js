@@ -12,7 +12,7 @@ const bot = new Telegraf(config.token);
 let replyText = {
     "helloAdmin": "Привет админ, ждем сообщения от пользователей",
     "helloUser":  "Приветствую, отправьте мне сообщение. Постараюсь ответить в ближайшее время. или выберите",
-    "replyWrong": "Для ответа пользователю используйте функцию Ответить/Reply."
+    "replyWrong": "Для ответа пользователю используйте функцию Ответить."
 };
 
 
@@ -40,10 +40,10 @@ let forwardToAdmin = async (ctx) => {
         ctx.reply(replyText.replyWrong);
     } else {
         let message = ctx.message;
-       await ctx.telegram.sendMessage(config.admin, `Новое сообщение от <b>${message.from.first_name} ${message.from.last_name}</b>\nОТ`, {
+       await ctx.telegram.sendMessage(config.admin, `Новое сообщение от <b>${message.from.first_name} ${message.from.last_name}</b>\n`, {
         parse_mode: "HTML",
         ...Markup.inlineKeyboard([
-            Markup.button.callback("Ответьте --", message.from.id),
+            Markup.button.callback("Ответьте на это сообщение", message.from.id),
         ]),
     });
        ctx.forwardMessage(config.admin)
@@ -78,11 +78,13 @@ bot.on('callback_query', async (ctx) => {
 bot.on('message', (ctx) => {
 
     let message = ctx.message;
-    if (message.reply_to_message
-        && message.reply_to_message.reply_markup.inline_keyboard
-        && isAdmin(message.from.id)) {
-        let reply_id = (message.reply_to_message.reply_markup.inline_keyboard[0][0].callback_data)
-        ctx.telegram.sendCopy(reply_id, message);
+    if (isAdmin(message.from.id)){
+    if (message.reply_to_message)
+        if (message.reply_to_message.reply_markup)
+            if (message.reply_to_message.reply_markup.inline_keyboard) {
+                let reply_id = (message.reply_to_message.reply_markup.inline_keyboard[0][0].callback_data)
+                ctx.telegram.sendCopy(reply_id, message);
+        }
     } else {
         forwardToAdmin(ctx);
     }
