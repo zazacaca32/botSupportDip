@@ -1,5 +1,5 @@
 const { Telegraf, Markup } = require('telegraf')
-
+import 'dotenv/config'
 
 let config = {
     "token": "6930134753:AAEbV9KEev_ZoAOd5Lu4fdcjPKZbTdfEGwA", // Токен бота
